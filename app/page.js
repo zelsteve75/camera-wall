@@ -201,8 +201,7 @@ export default function CameraWallPrototype() {
                 ))}
               </div>
 
-                {reachedFreeLimit && (
-                  <div className="mt-8 space-y-4">
+                <div className="mt-8 space-y-4">
                     <details className="group overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/40">
                       <summary className="flex cursor-pointer list-none items-center justify-between px-6 py-5 text-sm text-slate-200 marker:hidden">
                         <div>
@@ -249,7 +248,6 @@ export default function CameraWallPrototype() {
                       </summary>
                     </details>
                   </div>
-                )}
               </>
             )}
           </section>
