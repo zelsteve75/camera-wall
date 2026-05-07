@@ -38,7 +38,9 @@ function CameraCard({ camera, focus, onFocus, onEdit, onDelete }) {
           )}
 
           <div className="absolute left-3 top-3 flex items-center gap-2 rounded-full bg-black/55 px-3 py-1.5 text-xs font-medium text-white backdrop-blur">
-            <Camera className="h-3.5 w-3.5" />
+            <div className="flex h-5 w-5 items-center justify-center rounded-full border border-white/20 bg-white/10">
+              <Plus className="h-3 w-3" />
+            </div>
             {camera.name}
           </div>
 
@@ -98,6 +100,8 @@ export default function CameraWallPrototype() {
   const layout = cameraList.length <= 3 ? "row" : "grid";
 
   const reachedFreeLimit = cameraList.length >= FREE_CAMERA_LIMIT;
+
+  const emptyFreeSlots = Math.max(FREE_CAMERA_LIMIT - cameraList.length, 0);
 
   const handleAddCamera = () => {
     if (!cameraName || !cameraFeed) return;
@@ -169,37 +173,32 @@ export default function CameraWallPrototype() {
           </div>
 
           <section className="px-0 py-2">
-            {cameraList.length === 0 ? (
-              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((slot) => (
-                  <button
-                    key={slot}
-                    onClick={() => setShowAddModal(true)}
-                    className="group aspect-video rounded-3xl border border-dashed border-slate-700 bg-slate-900/40 transition hover:border-slate-500 hover:bg-slate-900"
-                  >
-                    <div className="flex h-full flex-col items-center justify-center text-slate-500 transition group-hover:text-slate-300">
-                      <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full border border-slate-700 bg-slate-950">
-                        <Plus className="h-6 w-6" />
-                      </div>
-                      <p className="text-sm font-medium">Add Camera</p>
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+              {cameraList.map((camera) => (
+                <CameraCard
+                  key={camera.id}
+                  camera={camera}
+                  onFocus={setFocusedCamera}
+                  onEdit={handleEditCamera}
+                  onDelete={handleDeleteCamera}
+                />
+              ))}
+
+              {Array.from({ length: emptyFreeSlots }).map((_, slot) => (
+                <button
+                  key={`empty-${slot}`}
+                  onClick={() => setShowAddModal(true)}
+                  className="group aspect-video rounded-3xl border border-dashed border-slate-700 bg-slate-900/40 transition hover:border-slate-500 hover:bg-slate-900"
+                >
+                  <div className="flex h-full flex-col items-center justify-center text-slate-500 transition group-hover:text-slate-300">
+                    <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full border border-slate-700 bg-slate-950">
+                      <Plus className="h-6 w-6" />
                     </div>
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <div className={layout === "grid" ? "grid gap-5 md:grid-cols-2 xl:grid-cols-4" : "flex gap-5 overflow-x-auto pb-2"}>
-                {cameraList.map((camera) => (
-                  <div key={camera.id} className={layout === "row" ? "min-w-[340px] md:min-w-[460px]" : ""}>
-                    <CameraCard
-                      camera={camera}
-                      onFocus={setFocusedCamera}
-                      onEdit={handleEditCamera}
-                      onDelete={handleDeleteCamera}
-                    />
+                    <p className="text-sm font-medium">Add Camera</p>
                   </div>
-                ))}
-              </div>
-            )}
+                </button>
+              ))}
+            </div>
 
             <div className="mt-8 space-y-4">
               <details className="group overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/40">
