@@ -1,8 +1,18 @@
+# app/page.js
+
+```jsx
 "use client";
 
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Maximize2, Pencil, Plus, Trash2 } from "lucide-react";
+import {
+  Maximize2,
+  Pencil,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react";
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -129,7 +139,13 @@ function EmptyVideoSlot({ onClick }) {
   );
 }
 
-function VideoCard({ video, focus = false, onFocus, onEdit, onDelete }) {
+function VideoCard({
+  video,
+  focus = false,
+  onFocus,
+  onEdit,
+  onDelete,
+}) {
   return (
     <motion.div
       layout
@@ -186,21 +202,46 @@ function VideoCard({ video, focus = false, onFocus, onEdit, onDelete }) {
   );
 }
 
+function InfoModal({ title, children, onClose }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-3xl rounded-3xl border border-slate-800 bg-slate-950 p-6 shadow-2xl"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-3xl font-bold text-white">{title}</h2>
+
+          <Button
+            onClick={onClose}
+            variant="secondary"
+            size="icon"
+            className="rounded-full"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+
+        <div className="max-h-[70vh] overflow-y-auto pr-2 text-slate-300">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function EventWall() {
   const [focusedVideo, setFocusedVideo] = useState(null);
-
   const [showVideoModal, setShowVideoModal] = useState(false);
-
   const [editingVideo, setEditingVideo] = useState(null);
-
   const [videoUrl, setVideoUrl] = useState("");
-
   const [videoList, setVideoList] = useState([]);
-
   const [hasLoaded, setHasLoaded] = useState(false);
-
-  const [selectedUseCase, setSelectedUseCase] =
-    useState("Sports");
+  const [selectedUseCase, setSelectedUseCase] = useState("Sports");
+  const [activeInfoModal, setActiveInfoModal] = useState(null);
 
   useEffect(() => {
     setVideoList(getSavedVideos());
@@ -209,10 +250,7 @@ export default function EventWall() {
 
   useEffect(() => {
     if (hasLoaded) {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(videoList)
-      );
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(videoList));
     }
   }, [videoList, hasLoaded]);
 
@@ -301,30 +339,19 @@ export default function EventWall() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
       <main className="flex min-h-screen flex-col">
-        <header className="border-b border-slate-900 bg-slate-950/90 px-4 py-4 backdrop-blur md:px-6">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
-                Event Wall
-              </h1>
+        <header className="border-b border-slate-900 bg-slate-950/90 px-4 py-5 backdrop-blur md:px-6">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
+              Event Wall
+            </h1>
 
-              <p className="mt-2 text-sm text-slate-300 md:text-base">
-                Tired of juggling multiple YouTube tabs?
-              </p>
+            <p className="mt-2 text-sm text-slate-300 md:text-base">
+              Tired of juggling multiple YouTube tabs?
+            </p>
 
-              <p className="mt-1 text-xs text-slate-500 md:text-sm">
-                Watch up to 4 videos in one clean view.
-              </p>
-            </div>
-
-            <Button
-              disabled={reachedFreeLimit}
-              onClick={openAddVideoModal}
-              className="rounded-xl bg-white px-4 text-slate-950 hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add Video
-            </Button>
+            <p className="mt-1 text-xs text-slate-500 md:text-sm">
+              Watch up to 4 videos in one clean view.
+            </p>
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2">
@@ -352,7 +379,7 @@ export default function EventWall() {
         </header>
 
         <section className="px-4 py-3 md:px-6">
-          <div className="grid gap-3 md:grid-cols-[1fr_280px]">
+          <div className="grid gap-3 md:grid-cols-[1fr_728px]">
             <div className="rounded-2xl border border-slate-800 bg-slate-900/60 px-4 py-3">
               <p className="text-sm font-semibold text-white">
                 {currentUseCase.title}
@@ -376,8 +403,8 @@ export default function EventWall() {
               </div>
             </div>
 
-            <div className="flex min-h-[90px] items-center justify-center rounded-2xl border border-dashed border-slate-800 bg-slate-900/40 text-sm text-slate-500">
-              Advertisement
+            <div className="flex h-[90px] items-center justify-center rounded-2xl border border-dashed border-slate-800 bg-slate-900/40 text-sm text-slate-500">
+              728x90 Advertisement
             </div>
           </div>
         </section>
@@ -405,18 +432,33 @@ export default function EventWall() {
           </div>
         </section>
 
+        <section className="px-4 pb-6 md:px-6">
+          <div className="flex h-[90px] items-center justify-center rounded-2xl border border-dashed border-slate-800 bg-slate-900/40 text-sm text-slate-500">
+            Bottom Advertisement
+          </div>
+        </section>
+
         <footer className="border-t border-slate-900 px-4 py-6 md:px-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
-              <button className="hover:text-slate-300 transition">
+              <button
+                onClick={() => setActiveInfoModal("about")}
+                className="transition hover:text-slate-300"
+              >
                 About
               </button>
 
-              <button className="hover:text-slate-300 transition">
+              <button
+                onClick={() => setActiveInfoModal("faq")}
+                className="transition hover:text-slate-300"
+              >
                 FAQ
               </button>
 
-              <button className="hover:text-slate-300 transition">
+              <button
+                onClick={() => setActiveInfoModal("privacy")}
+                className="transition hover:text-slate-300"
+              >
                 Privacy
               </button>
             </div>
@@ -529,6 +571,102 @@ export default function EventWall() {
           </div>
         </div>
       )}
+
+      {activeInfoModal === "about" && (
+        <InfoModal
+          title="About Event Wall"
+          onClose={() => setActiveInfoModal(null)}
+        >
+          <p>
+            Event Wall is a lightweight multiview utility that lets you watch up to 4 YouTube videos in one clean view.
+          </p>
+
+          <p className="mt-4">
+            It was built for people tired of juggling multiple tabs while watching sports, news, podcasts, livestreams, study videos, and finance coverage.
+          </p>
+
+          <p className="mt-4">
+            Event Wall does not host videos. It simply displays publicly embeddable YouTube videos.
+          </p>
+        </InfoModal>
+      )}
+
+      {activeInfoModal === "faq" && (
+        <InfoModal
+          title="FAQ"
+          onClose={() => setActiveInfoModal(null)}
+        >
+          <div className="space-y-6">
+            <div>
+              <h3 className="font-semibold text-white">
+                What is Event Wall?
+              </h3>
+
+              <p className="mt-2 text-slate-400">
+                Event Wall lets you watch up to 4 YouTube videos at once in one clean multiview layout.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-white">
+                Does it work with livestreams?
+              </h3>
+
+              <p className="mt-2 text-slate-400">
+                Yes. If the stream supports embedding, it should work.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-white">
+                Are my videos saved?
+              </h3>
+
+              <p className="mt-2 text-slate-400">
+                Yes. Your wall is saved locally on your device.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-white">
+                Why won’t some videos play?
+              </h3>
+
+              <p className="mt-2 text-slate-400">
+                Some creators disable embedding on YouTube.
+              </p>
+            </div>
+          </div>
+        </InfoModal>
+      )}
+
+      {activeInfoModal === "privacy" && (
+        <InfoModal
+          title="Privacy Policy"
+          onClose={() => setActiveInfoModal(null)}
+        >
+          <p>
+            Event Wall is designed to be lightweight and simple.
+          </p>
+
+          <p className="mt-4">
+            Video links are saved locally in your browser using local storage so your wall persists between visits.
+          </p>
+
+          <p className="mt-4">
+            Event Wall does not require user accounts to use the core functionality.
+          </p>
+
+          <p className="mt-4">
+            Videos are displayed using YouTube embeds, which may collect data according to YouTube’s own policies.
+          </p>
+
+          <p className="mt-4">
+            Advertising partners may use cookies or related technologies according to their own privacy policies.
+          </p>
+        </InfoModal>
+      )}
     </div>
   );
 }
+```
