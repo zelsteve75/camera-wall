@@ -70,7 +70,17 @@ const useCases = {
       "Follow weather, launch, or event streams",
     ],
   },
-};
+  Recipes: {
+  title: "Recipe & Meal Planning",
+  description:
+    "Follow multiple cooking videos at once, compare recipes, or keep breakfast, lunch, dinner, and dessert ideas visible while planning meals.",
+  examples: [
+    "Compare different recipe videos",
+    "Plan breakfast, lunch, dinner, and dessert",
+    "Follow cooking tutorials side-by-side",
+  ],
+},
+}
 
 function getSavedVideos() {
   if (typeof window === "undefined") return [];
