@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Maximize2, Plus, Trash2 } from "lucide-react";
+import { Maximize2, Pencil, Plus, Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -60,7 +60,7 @@ function EmptyVideoSlot({ onClick }) {
   );
 }
 
-function VideoCard({ video, focus = false, onFocus, onDelete }) {
+function VideoCard({ video, focus = false, onFocus, onEdit, onDelete }) {
   return (
     <motion.div
       layout
@@ -81,14 +81,25 @@ function VideoCard({ video, focus = false, onFocus, onDelete }) {
 
           <div className="absolute bottom-3 right-3 flex items-center gap-2">
             {!focus && (
-              <Button
-                onClick={() => onDelete(video.id)}
-                size="icon"
-                variant="secondary"
-                className="h-9 w-9 rounded-full bg-red-500/90 text-white hover:bg-red-500"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+              <>
+                <Button
+                  onClick={() => onEdit(video)}
+                  size="icon"
+                  variant="secondary"
+                  className="h-9 w-9 rounded-full bg-black/70 text-white hover:bg-black"
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+
+                <Button
+                  onClick={() => onDelete(video.id)}
+                  size="icon"
+                  variant="secondary"
+                  className="h-9 w-9 rounded-full bg-red-500/90 text-white hover:bg-red-500"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </>
             )}
 
             <Button
@@ -109,6 +120,7 @@ function VideoCard({ video, focus = false, onFocus, onDelete }) {
 export default function EventWall() {
   const [focusedVideo, setFocusedVideo] = useState(null);
   const [showVideoModal, setShowVideoModal] = useState(false);
+  const [editingVideo, setEditingVideo] = useState(null);
   const [videoUrl, setVideoUrl] = useState("");
   const [videoList, setVideoList] = useState([]);
   const [hasLoaded, setHasLoaded] = useState(false);
@@ -129,6 +141,7 @@ export default function EventWall() {
 
   const resetVideoForm = () => {
     setVideoUrl("");
+    setEditingVideo(null);
     setShowVideoModal(false);
   };
 
@@ -136,6 +149,13 @@ export default function EventWall() {
     if (reachedFreeLimit) return;
 
     setVideoUrl("");
+    setEditingVideo(null);
+    setShowVideoModal(true);
+  };
+
+  const openEditVideoModal = (video) => {
+    setEditingVideo(video);
+    setVideoUrl(video.url || "");
     setShowVideoModal(true);
   };
 
@@ -152,6 +172,23 @@ export default function EventWall() {
     }
 
     const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+
+    if (editingVideo) {
+      setVideoList((prev) =>
+        prev.map((video) =>
+          video.id === editingVideo.id
+            ? {
+                ...video,
+                url: cleanUrl,
+                embedUrl,
+              }
+            : video
+        )
+      );
+
+      resetVideoForm();
+      return;
+    }
 
     const newVideo = {
       id: crypto.randomUUID(),
@@ -207,6 +244,7 @@ export default function EventWall() {
                 key={video.id}
                 video={video}
                 onFocus={setFocusedVideo}
+                onEdit={openEditVideoModal}
                 onDelete={handleDeleteVideo}
               />
             ))}
@@ -225,10 +263,14 @@ export default function EventWall() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-950 p-6 shadow-2xl">
             <div className="mb-5">
-              <h2 className="text-2xl font-bold text-white">Add Video</h2>
+              <h2 className="text-2xl font-bold text-white">
+                {editingVideo ? "Edit Video" : "Add Video"}
+              </h2>
 
               <p className="mt-1 text-sm text-slate-400">
-                Paste a YouTube link into your wall.
+                {editingVideo
+                  ? "Update the YouTube link for this slot."
+                  : "Paste a YouTube link into your wall."}
               </p>
             </div>
 
@@ -258,7 +300,7 @@ export default function EventWall() {
                 onClick={handleSaveVideo}
                 className="rounded-2xl bg-white text-slate-950 hover:bg-slate-200"
               >
-                Add Video
+                {editingVideo ? "Save Changes" : "Add Video"}
               </Button>
             </div>
           </div>
@@ -294,6 +336,7 @@ export default function EventWall() {
                 video={focusedVideo}
                 focus
                 onFocus={() => {}}
+                onEdit={() => {}}
                 onDelete={() => {}}
               />
             </div>
