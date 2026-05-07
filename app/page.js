@@ -9,6 +9,69 @@ import { Button } from "@/components/ui/button";
 const STORAGE_KEY = "event-wall-videos";
 const FREE_VIDEO_LIMIT = 4;
 
+const useCases = {
+  Sports: {
+    title: "Sports Multiview",
+    description:
+      "Watch multiple games, fights, highlights, or sports commentary streams without constantly switching tabs.",
+    examples: [
+      "Follow multiple games at once",
+      "Track fantasy sports matchups",
+      "Watch boxing, MMA, and post-fight coverage together",
+    ],
+  },
+  News: {
+    title: "News Monitoring",
+    description:
+      "Keep several news feeds, live updates, or commentary videos visible in one clean view.",
+    examples: [
+      "Monitor breaking news coverage",
+      "Compare different live reports",
+      "Follow local, national, and financial news together",
+    ],
+  },
+  Podcasts: {
+    title: "Podcast Workspace",
+    description:
+      "Queue up interviews, longform conversations, or commentary videos and manage them from one screen.",
+    examples: [
+      "Compare different podcast episodes",
+      "Keep interviews ready while working",
+      "Monitor several creator conversations",
+    ],
+  },
+  Study: {
+    title: "Study & Research",
+    description:
+      "Use Event Wall as a lightweight learning dashboard for tutorials, lectures, walkthroughs, or explanations.",
+    examples: [
+      "Compare coding tutorials",
+      "Watch multiple lectures side-by-side",
+      "Use language learning videos together",
+    ],
+  },
+  Finance: {
+    title: "Finance & Market Watching",
+    description:
+      "Monitor finance videos, market commentary, earnings coverage, and trading discussions in one place.",
+    examples: [
+      "Watch market coverage and commentary",
+      "Track crypto or stock livestreams",
+      "Follow earnings or economic updates",
+    ],
+  },
+  Livestreams: {
+    title: "Livestream Control Room",
+    description:
+      "Build a simple live-event dashboard for ongoing streams, events, webcams, or real-time coverage.",
+    examples: [
+      "Watch several live events at once",
+      "Monitor creator livestreams",
+      "Follow weather, launch, or event streams",
+    ],
+  },
+};
+
 function getSavedVideos() {
   if (typeof window === "undefined") return [];
 
@@ -124,6 +187,7 @@ export default function EventWall() {
   const [videoUrl, setVideoUrl] = useState("");
   const [videoList, setVideoList] = useState([]);
   const [hasLoaded, setHasLoaded] = useState(false);
+  const [selectedUseCase, setSelectedUseCase] = useState("Sports");
 
   useEffect(() => {
     setVideoList(getSavedVideos());
@@ -138,10 +202,9 @@ export default function EventWall() {
 
   const reachedFreeLimit = videoList.length >= FREE_VIDEO_LIMIT;
 
-  const emptyFreeSlots = Math.max(
-    FREE_VIDEO_LIMIT - videoList.length,
-    0
-  );
+  const emptyFreeSlots = Math.max(FREE_VIDEO_LIMIT - videoList.length, 0);
+
+  const currentUseCase = useCases[selectedUseCase];
 
   const resetVideoForm = () => {
     setVideoUrl("");
@@ -205,9 +268,7 @@ export default function EventWall() {
   };
 
   const handleDeleteVideo = (id) => {
-    setVideoList((prev) =>
-      prev.filter((video) => video.id !== id)
-    );
+    setVideoList((prev) => prev.filter((video) => video.id !== id));
   };
 
   return (
@@ -240,27 +301,52 @@ export default function EventWall() {
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2">
-            {[
-              "Sports",
-              "News",
-              "Podcasts",
-              "Study",
-              "Finance",
-              "Livestreams",
-            ].map((item) => (
-              <div
-                key={item}
-                className="rounded-full border border-slate-800 bg-slate-900 px-3 py-1 text-xs text-slate-400"
-              >
-                {item}
-              </div>
-            ))}
+            {Object.keys(useCases).map((item) => {
+              const isActive = selectedUseCase === item;
+
+              return (
+                <button
+                  key={item}
+                  onClick={() => setSelectedUseCase(item)}
+                  className={`rounded-full border px-3 py-1 text-xs transition ${
+                    isActive
+                      ? "border-white bg-white text-slate-950"
+                      : "border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-600 hover:text-slate-200"
+                  }`}
+                >
+                  {item}
+                </button>
+              );
+            })}
           </div>
         </header>
 
         <section className="shrink-0 px-4 py-3 md:px-6">
-          <div className="flex h-[90px] items-center justify-center rounded-2xl border border-dashed border-slate-800 bg-slate-900/40 text-sm text-slate-500">
-            Advertisement
+          <div className="grid gap-3 md:grid-cols-[1fr_280px]">
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/60 px-4 py-3">
+              <p className="text-sm font-semibold text-white">
+                {currentUseCase.title}
+              </p>
+
+              <p className="mt-1 text-xs leading-relaxed text-slate-400 md:text-sm">
+                {currentUseCase.description}
+              </p>
+
+              <div className="mt-3 flex flex-wrap gap-2">
+                {currentUseCase.examples.map((example) => (
+                  <span
+                    key={example}
+                    className="rounded-full border border-slate-800 bg-slate-950 px-3 py-1 text-[11px] text-slate-400"
+                  >
+                    {example}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex min-h-[90px] items-center justify-center rounded-2xl border border-dashed border-slate-800 bg-slate-900/40 text-sm text-slate-500">
+              Advertisement
+            </div>
           </div>
         </section>
 
@@ -310,9 +396,7 @@ export default function EventWall() {
 
               <input
                 value={videoUrl}
-                onChange={(event) =>
-                  setVideoUrl(event.target.value)
-                }
+                onChange={(event) => setVideoUrl(event.target.value)}
                 placeholder="https://www.youtube.com/watch?v=..."
                 className="h-11 w-full rounded-2xl border border-slate-800 bg-slate-900 px-4 text-white outline-none placeholder:text-slate-500 focus:border-slate-600"
               />
@@ -345,25 +429,17 @@ export default function EventWall() {
         >
           <div
             className="flex h-full w-full max-w-7xl flex-col"
-            onClick={(event) =>
-              event.stopPropagation()
-            }
+            onClick={(event) => event.stopPropagation()}
           >
             <div className="mb-3 flex shrink-0 items-center justify-between">
               <div>
-                <p className="text-2xl font-bold text-white">
-                  Focus Mode
-                </p>
+                <p className="text-2xl font-bold text-white">Focus Mode</p>
 
-                <p className="text-sm text-slate-400">
-                  Expanded view
-                </p>
+                <p className="text-sm text-slate-400">Expanded view</p>
               </div>
 
               <Button
-                onClick={() =>
-                  setFocusedVideo(null)
-                }
+                onClick={() => setFocusedVideo(null)}
                 variant="secondary"
                 className="rounded-xl"
               >
