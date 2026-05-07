@@ -393,12 +393,12 @@ export default function EventWall() {
         <footer className="border-t border-slate-900 px-4 py-6 md:px-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
-              <button
-                onClick={() => setActiveInfoModal("about")}
-                className="transition hover:text-slate-300"
-              >
-                About
-              </button>
+              <a
+  href="/about"
+  className="transition hover:text-slate-300"
+>
+  About
+</a>
 
               <button
                 onClick={() => setActiveInfoModal("faq")}
