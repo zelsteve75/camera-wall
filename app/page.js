@@ -101,22 +101,25 @@ export default function CameraWallPrototype() {
   const emptyFreeSlots = Math.max(FREE_CAMERA_LIMIT - cameraList.length, 0);
 
   const handleAddCamera = () => {
-    if (!cameraName || !cameraFeed) return;
+    const cleanName = cameraName.trim();
+    const cleanFeed = cameraFeed.trim();
+
+    if (!cleanName || !cleanFeed) return;
 
     if (editingCamera) {
       setCameraList((prev) =>
         prev.map((cam) =>
           cam.id === editingCamera.id
-            ? { ...cam, name: cameraName, feed: cameraFeed }
+            ? { ...cam, name: cleanName, feed: cleanFeed }
             : cam
         )
       );
     } else {
       const newCamera = {
         id: Date.now().toString(),
-        name: cameraName,
+        name: cleanName,
         status: "online",
-        feed: cameraFeed,
+        feed: cleanFeed,
       };
 
       setCameraList((prev) => [...prev, newCamera]);
