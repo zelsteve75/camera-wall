@@ -137,7 +137,11 @@ export default function EventWall() {
   }, [videoList, hasLoaded]);
 
   const reachedFreeLimit = videoList.length >= FREE_VIDEO_LIMIT;
-  const emptyFreeSlots = Math.max(FREE_VIDEO_LIMIT - videoList.length, 0);
+
+  const emptyFreeSlots = Math.max(
+    FREE_VIDEO_LIMIT - videoList.length,
+    0
+  );
 
   const resetVideoForm = () => {
     setVideoUrl("");
@@ -201,21 +205,27 @@ export default function EventWall() {
   };
 
   const handleDeleteVideo = (id) => {
-    setVideoList((prev) => prev.filter((video) => video.id !== id));
+    setVideoList((prev) =>
+      prev.filter((video) => video.id !== id)
+    );
   };
 
   return (
     <div className="h-screen overflow-hidden bg-slate-950 text-slate-100">
       <main className="flex h-full flex-col">
-        <header className="shrink-0 border-b border-slate-900 bg-slate-950/90 px-4 py-3 backdrop-blur md:px-6">
-          <div className="flex items-center justify-between gap-4">
+        <header className="shrink-0 border-b border-slate-900 bg-slate-950/90 px-4 py-4 backdrop-blur md:px-6">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight text-white md:text-3xl">
+              <h1 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
                 Event Wall
               </h1>
 
-              <p className="mt-1 text-xs text-slate-400 md:text-sm">
-                Watch multiple YouTube videos at once.
+              <p className="mt-2 text-sm text-slate-300 md:text-base">
+                Tired of juggling multiple YouTube tabs?
+              </p>
+
+              <p className="mt-1 text-xs text-slate-500 md:text-sm">
+                Watch up to 4 videos in one clean view.
               </p>
             </div>
 
@@ -228,12 +238,29 @@ export default function EventWall() {
               Add Video
             </Button>
           </div>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            {[
+              "Sports",
+              "News",
+              "Podcasts",
+              "Study",
+              "Finance",
+              "Livestreams",
+            ].map((item) => (
+              <div
+                key={item}
+                className="rounded-full border border-slate-800 bg-slate-900 px-3 py-1 text-xs text-slate-400"
+              >
+                {item}
+              </div>
+            ))}
+          </div>
         </header>
 
-        <section className="shrink-0 px-4 py-2 md:px-6">
-          <div className="rounded-xl border border-slate-800 bg-slate-900/60 px-3 py-2 text-xs text-slate-300 md:text-sm">
-            Paste any YouTube link. Your wall is automatically saved locally on
-            this device.
+        <section className="shrink-0 px-4 py-3 md:px-6">
+          <div className="flex h-[90px] items-center justify-center rounded-2xl border border-dashed border-slate-800 bg-slate-900/40 text-sm text-slate-500">
+            Advertisement
           </div>
         </section>
 
@@ -249,7 +276,9 @@ export default function EventWall() {
               />
             ))}
 
-            {Array.from({ length: emptyFreeSlots }).map((_, index) => (
+            {Array.from({
+              length: emptyFreeSlots,
+            }).map((_, index) => (
               <EmptyVideoSlot
                 key={`empty-${index}`}
                 onClick={openAddVideoModal}
@@ -281,7 +310,9 @@ export default function EventWall() {
 
               <input
                 value={videoUrl}
-                onChange={(event) => setVideoUrl(event.target.value)}
+                onChange={(event) =>
+                  setVideoUrl(event.target.value)
+                }
                 placeholder="https://www.youtube.com/watch?v=..."
                 className="h-11 w-full rounded-2xl border border-slate-800 bg-slate-900 px-4 text-white outline-none placeholder:text-slate-500 focus:border-slate-600"
               />
@@ -314,16 +345,25 @@ export default function EventWall() {
         >
           <div
             className="flex h-full w-full max-w-7xl flex-col"
-            onClick={(event) => event.stopPropagation()}
+            onClick={(event) =>
+              event.stopPropagation()
+            }
           >
             <div className="mb-3 flex shrink-0 items-center justify-between">
               <div>
-                <p className="text-2xl font-bold text-white">Focus Mode</p>
-                <p className="text-sm text-slate-400">Expanded view</p>
+                <p className="text-2xl font-bold text-white">
+                  Focus Mode
+                </p>
+
+                <p className="text-sm text-slate-400">
+                  Expanded view
+                </p>
               </div>
 
               <Button
-                onClick={() => setFocusedVideo(null)}
+                onClick={() =>
+                  setFocusedVideo(null)
+                }
                 variant="secondary"
                 className="rounded-xl"
               >
