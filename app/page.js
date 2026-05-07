@@ -20,6 +20,7 @@ const useCases = {
       "Watch boxing, MMA, and post-fight coverage together",
     ],
   },
+
   News: {
     title: "News Monitoring",
     description:
@@ -30,6 +31,7 @@ const useCases = {
       "Follow local, national, and financial news together",
     ],
   },
+
   Podcasts: {
     title: "Podcast Workspace",
     description:
@@ -40,6 +42,7 @@ const useCases = {
       "Monitor several creator conversations",
     ],
   },
+
   Study: {
     title: "Study & Research",
     description:
@@ -50,6 +53,7 @@ const useCases = {
       "Use language learning videos together",
     ],
   },
+
   Finance: {
     title: "Finance & Market Watching",
     description:
@@ -60,6 +64,7 @@ const useCases = {
       "Follow earnings or economic updates",
     ],
   },
+
   Livestreams: {
     title: "Livestream Control Room",
     description:
@@ -92,6 +97,7 @@ function getYouTubeId(url) {
     }
 
     const watchId = parsed.searchParams.get("v");
+
     if (watchId) return watchId;
 
     const parts = parsed.pathname.split("/").filter(Boolean);
@@ -182,12 +188,19 @@ function VideoCard({ video, focus = false, onFocus, onEdit, onDelete }) {
 
 export default function EventWall() {
   const [focusedVideo, setFocusedVideo] = useState(null);
+
   const [showVideoModal, setShowVideoModal] = useState(false);
+
   const [editingVideo, setEditingVideo] = useState(null);
+
   const [videoUrl, setVideoUrl] = useState("");
+
   const [videoList, setVideoList] = useState([]);
+
   const [hasLoaded, setHasLoaded] = useState(false);
-  const [selectedUseCase, setSelectedUseCase] = useState("Sports");
+
+  const [selectedUseCase, setSelectedUseCase] =
+    useState("Sports");
 
   useEffect(() => {
     setVideoList(getSavedVideos());
@@ -196,13 +209,20 @@ export default function EventWall() {
 
   useEffect(() => {
     if (hasLoaded) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(videoList));
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(videoList)
+      );
     }
   }, [videoList, hasLoaded]);
 
-  const reachedFreeLimit = videoList.length >= FREE_VIDEO_LIMIT;
+  const reachedFreeLimit =
+    videoList.length >= FREE_VIDEO_LIMIT;
 
-  const emptyFreeSlots = Math.max(FREE_VIDEO_LIMIT - videoList.length, 0);
+  const emptyFreeSlots = Math.max(
+    FREE_VIDEO_LIMIT - videoList.length,
+    0
+  );
 
   const currentUseCase = useCases[selectedUseCase];
 
@@ -238,7 +258,8 @@ export default function EventWall() {
       return;
     }
 
-    const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+    const embedUrl =
+      `https://www.youtube.com/embed/${videoId}`;
 
     if (editingVideo) {
       setVideoList((prev) =>
@@ -263,18 +284,24 @@ export default function EventWall() {
       embedUrl,
     };
 
-    setVideoList((prev) => [...prev, newVideo]);
+    setVideoList((prev) => [
+      ...prev,
+      newVideo,
+    ]);
+
     resetVideoForm();
   };
 
   const handleDeleteVideo = (id) => {
-    setVideoList((prev) => prev.filter((video) => video.id !== id));
+    setVideoList((prev) =>
+      prev.filter((video) => video.id !== id)
+    );
   };
 
   return (
-    <div className="h-screen overflow-hidden bg-slate-950 text-slate-100">
-      <main className="flex h-full flex-col">
-        <header className="shrink-0 border-b border-slate-900 bg-slate-950/90 px-4 py-4 backdrop-blur md:px-6">
+    <div className="min-h-screen bg-slate-950 text-slate-100">
+      <main className="flex min-h-screen flex-col">
+        <header className="border-b border-slate-900 bg-slate-950/90 px-4 py-4 backdrop-blur md:px-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <h1 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
@@ -302,12 +329,15 @@ export default function EventWall() {
 
           <div className="mt-4 flex flex-wrap gap-2">
             {Object.keys(useCases).map((item) => {
-              const isActive = selectedUseCase === item;
+              const isActive =
+                selectedUseCase === item;
 
               return (
                 <button
                   key={item}
-                  onClick={() => setSelectedUseCase(item)}
+                  onClick={() =>
+                    setSelectedUseCase(item)
+                  }
                   className={`rounded-full border px-3 py-1 text-xs transition ${
                     isActive
                       ? "border-white bg-white text-slate-950"
@@ -321,7 +351,7 @@ export default function EventWall() {
           </div>
         </header>
 
-        <section className="shrink-0 px-4 py-3 md:px-6">
+        <section className="px-4 py-3 md:px-6">
           <div className="grid gap-3 md:grid-cols-[1fr_280px]">
             <div className="rounded-2xl border border-slate-800 bg-slate-900/60 px-4 py-3">
               <p className="text-sm font-semibold text-white">
@@ -333,14 +363,16 @@ export default function EventWall() {
               </p>
 
               <div className="mt-3 flex flex-wrap gap-2">
-                {currentUseCase.examples.map((example) => (
-                  <span
-                    key={example}
-                    className="rounded-full border border-slate-800 bg-slate-950 px-3 py-1 text-[11px] text-slate-400"
-                  >
-                    {example}
-                  </span>
-                ))}
+                {currentUseCase.examples.map(
+                  (example) => (
+                    <span
+                      key={example}
+                      className="rounded-full border border-slate-800 bg-slate-950 px-3 py-1 text-[11px] text-slate-400"
+                    >
+                      {example}
+                    </span>
+                  )
+                )}
               </div>
             </div>
 
@@ -350,8 +382,8 @@ export default function EventWall() {
           </div>
         </section>
 
-        <section className="min-h-0 flex-1 px-4 pb-4 md:px-6">
-          <div className="grid h-full gap-2 md:grid-cols-2 md:grid-rows-2">
+        <section className="flex-1 px-4 pb-4 md:px-6">
+          <div className="grid min-h-[700px] gap-2 md:grid-cols-2 md:grid-rows-2">
             {videoList.map((video) => (
               <VideoCard
                 key={video.id}
@@ -372,6 +404,28 @@ export default function EventWall() {
             ))}
           </div>
         </section>
+
+        <footer className="border-t border-slate-900 px-4 py-6 md:px-6">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
+              <button className="hover:text-slate-300 transition">
+                About
+              </button>
+
+              <button className="hover:text-slate-300 transition">
+                FAQ
+              </button>
+
+              <button className="hover:text-slate-300 transition">
+                Privacy
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-600">
+              Event Wall is not affiliated with or endorsed by YouTube.
+            </p>
+          </div>
+        </footer>
       </main>
 
       {showVideoModal && (
@@ -379,7 +433,9 @@ export default function EventWall() {
           <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-950 p-6 shadow-2xl">
             <div className="mb-5">
               <h2 className="text-2xl font-bold text-white">
-                {editingVideo ? "Edit Video" : "Add Video"}
+                {editingVideo
+                  ? "Edit Video"
+                  : "Add Video"}
               </h2>
 
               <p className="mt-1 text-sm text-slate-400">
@@ -396,7 +452,9 @@ export default function EventWall() {
 
               <input
                 value={videoUrl}
-                onChange={(event) => setVideoUrl(event.target.value)}
+                onChange={(event) =>
+                  setVideoUrl(event.target.value)
+                }
                 placeholder="https://www.youtube.com/watch?v=..."
                 className="h-11 w-full rounded-2xl border border-slate-800 bg-slate-900 px-4 text-white outline-none placeholder:text-slate-500 focus:border-slate-600"
               />
@@ -415,7 +473,9 @@ export default function EventWall() {
                 onClick={handleSaveVideo}
                 className="rounded-2xl bg-white text-slate-950 hover:bg-slate-200"
               >
-                {editingVideo ? "Save Changes" : "Add Video"}
+                {editingVideo
+                  ? "Save Changes"
+                  : "Add Video"}
               </Button>
             </div>
           </div>
@@ -425,21 +485,31 @@ export default function EventWall() {
       {focusedVideo && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
-          onClick={() => setFocusedVideo(null)}
+          onClick={() =>
+            setFocusedVideo(null)
+          }
         >
           <div
             className="flex h-full w-full max-w-7xl flex-col"
-            onClick={(event) => event.stopPropagation()}
+            onClick={(event) =>
+              event.stopPropagation()
+            }
           >
-            <div className="mb-3 flex shrink-0 items-center justify-between">
+            <div className="mb-3 flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold text-white">Focus Mode</p>
+                <p className="text-2xl font-bold text-white">
+                  Focus Mode
+                </p>
 
-                <p className="text-sm text-slate-400">Expanded view</p>
+                <p className="text-sm text-slate-400">
+                  Expanded view
+                </p>
               </div>
 
               <Button
-                onClick={() => setFocusedVideo(null)}
+                onClick={() =>
+                  setFocusedVideo(null)
+                }
                 variant="secondary"
                 className="rounded-xl"
               >
@@ -447,7 +517,7 @@ export default function EventWall() {
               </Button>
             </div>
 
-            <div className="min-h-0 flex-1">
+            <div className="flex-1">
               <VideoCard
                 video={focusedVideo}
                 focus
