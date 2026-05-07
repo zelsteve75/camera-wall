@@ -38,9 +38,6 @@ function CameraCard({ camera, focus, onFocus, onEdit, onDelete }) {
           )}
 
           <div className="absolute left-3 top-3 flex items-center gap-2 rounded-full bg-black/55 px-3 py-1.5 text-xs font-medium text-white backdrop-blur">
-            <div className="flex h-5 w-5 items-center justify-center rounded-full border border-white/20 bg-white/10">
-              <Plus className="h-3 w-3" />
-            </div>
             {camera.name}
           </div>
 
