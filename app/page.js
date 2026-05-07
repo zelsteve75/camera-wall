@@ -2,12 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import {
-  Maximize2,
-  Plus,
-  Trash2,
-} from "lucide-react";
-
+import { Maximize2, Plus, Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -46,29 +41,28 @@ const tiers = [
 function getSavedVideos() {
   if (typeof window === "undefined") return initialVideos;
 
-  const savedVideos = localStorage.getItem(STORAGE_KEY);
-
-  return savedVideos ? JSON.parse(savedVideos) : initialVideos;
+  try {
+    const savedVideos = localStorage.getItem(STORAGE_KEY);
+    return savedVideos ? JSON.parse(savedVideos) : initialVideos;
+  } catch {
+    return initialVideos;
+  }
 }
 
 function getYouTubeId(url) {
   try {
-    const parsed = new URL(url);
+    const parsed = new URL(url.trim());
 
     if (parsed.hostname.includes("youtu.be")) {
-      return parsed.pathname.slice(1);
+      return parsed.pathname.split("/").filter(Boolean)[0] || null;
     }
 
-    if (parsed.searchParams.get("v")) {
-      return parsed.searchParams.get("v");
-    }
+    const watchId = parsed.searchParams.get("v");
+    if (watchId) return watchId;
 
     const parts = parsed.pathname.split("/").filter(Boolean);
 
-    if (
-      ["embed", "live", "shorts"].includes(parts[0]) &&
-      parts[1]
-    ) {
+    if (["embed", "live", "shorts"].includes(parts[0]) && parts[1]) {
       return parts[1];
     }
 
@@ -88,10 +82,7 @@ function EmptyVideoSlot({ onClick }) {
         <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full border border-slate-700 bg-slate-950">
           <Plus className="h-6 w-6" />
         </div>
-
-        <p className="text-sm font-medium">
-          Add Video
-        </p>
+        <p className="text-sm font-medium">Add Video</p>
       </div>
     </button>
   );
@@ -106,21 +97,13 @@ function LockedSlot({ background }) {
         <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full border border-slate-700 bg-slate-950">
           <Plus className="h-6 w-6" />
         </div>
-
-        <p className="text-sm font-medium">
-          Locked Slot
-        </p>
+        <p className="text-sm font-medium">Locked Slot</p>
       </div>
     </div>
   );
 }
 
-function VideoCard({
-  video,
-  focus = false,
-  onFocus,
-  onDelete,
-}) {
+function VideoCard({ video, focus = false, onFocus, onDelete }) {
   return (
     <motion.div
       layout
@@ -134,7 +117,7 @@ function VideoCard({
             className="h-full w-full"
             src={video.embedUrl}
             title={video.name}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
           />
 
@@ -168,17 +151,11 @@ function VideoCard({
         {!focus && (
           <CardContent className="flex items-center justify-between p-4">
             <div>
-              <p className="font-semibold text-slate-100">
-                {video.name}
-              </p>
-
-              <p className="text-sm text-slate-400">
-                YouTube Video
-              </p>
+              <p className="font-semibold text-slate-100">{video.name}</p>
+              <p className="text-sm text-slate-400">YouTube Video</p>
             </div>
-
             <div className="rounded-full border border-slate-800 px-3 py-1 text-xs text-slate-300">
-              Active
+              Loaded
             </div>
           </CardContent>
         )}
@@ -197,21 +174,15 @@ function UpgradeTier({ tier }) {
           <p className="font-semibold text-white">
             {tier.name} — {tier.videos} Videos
           </p>
-
-          <p className="mt-1 text-slate-400">
-            {tier.description}
-          </p>
+          <p className="mt-1 text-slate-400">{tier.description}</p>
         </div>
-
         <span className="text-slate-500 transition group-open:rotate-180">
           ⌄
         </span>
       </summary>
 
       <div className="grid gap-5 border-t border-slate-800 p-5 md:grid-cols-2 xl:grid-cols-4">
-        {Array.from({
-          length: tier.extraSlots,
-        }).map((_, index) => (
+        {Array.from({ length: tier.extraSlots }).map((_, index) => (
           <LockedSlot
             key={`${tier.name}-${index}`}
             background={tier.slotBackground}
@@ -223,34 +194,17 @@ function UpgradeTier({ tier }) {
 }
 
 export default function EventWall() {
-  const [focusedVideo, setFocusedVideo] =
-    useState(null);
+  const [focusedVideo, setFocusedVideo] = useState(null);
+  const [showVideoModal, setShowVideoModal] = useState(false);
+  const [videoName, setVideoName] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
+  const [videoList, setVideoList] = useState(getSavedVideos);
 
-  const [showVideoModal, setShowVideoModal] =
-    useState(false);
-
-  const [videoName, setVideoName] =
-    useState("");
-
-  const [videoUrl, setVideoUrl] =
-    useState("");
-
-  const [videoList, setVideoList] =
-    useState(getSavedVideos);
-
-  const reachedFreeLimit =
-    videoList.length >= FREE_VIDEO_LIMIT;
-
-  const emptyFreeSlots = Math.max(
-    FREE_VIDEO_LIMIT - videoList.length,
-    0
-  );
+  const reachedFreeLimit = videoList.length >= FREE_VIDEO_LIMIT;
+  const emptyFreeSlots = Math.max(FREE_VIDEO_LIMIT - videoList.length, 0);
 
   useEffect(() => {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(videoList)
-    );
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(videoList));
   }, [videoList]);
 
   const resetVideoForm = () => {
@@ -268,10 +222,10 @@ export default function EventWall() {
   };
 
   const handleSaveVideo = () => {
-    const cleanName = videoName.trim();
+    const cleanName = videoName.trim() || `Video ${videoList.length + 1}`;
     const cleanUrl = videoUrl.trim();
 
-    if (!cleanName || !cleanUrl) return;
+    if (!cleanUrl) return;
 
     const videoId = getYouTubeId(cleanUrl);
 
@@ -280,27 +234,21 @@ export default function EventWall() {
       return;
     }
 
-    const embedUrl =
-      `https://www.youtube.com/embed/${videoId}`;
+    const embedUrl = `https://www.youtube.com/embed/${videoId}`;
 
     const newVideo = {
       id: Date.now().toString(),
       name: cleanName,
+      url: cleanUrl,
       embedUrl,
     };
 
-    setVideoList((prev) => [
-      ...prev,
-      newVideo,
-    ]);
-
+    setVideoList((prev) => [...prev, newVideo]);
     resetVideoForm();
   };
 
   const handleDeleteVideo = (id) => {
-    setVideoList((prev) =>
-      prev.filter((video) => video.id !== id)
-    );
+    setVideoList((prev) => prev.filter((video) => video.id !== id));
   };
 
   return (
@@ -312,7 +260,6 @@ export default function EventWall() {
               <h1 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
                 Event Wall
               </h1>
-
               <p className="mt-2 text-sm text-slate-400">
                 Watch multiple YouTube videos at once.
               </p>
@@ -331,11 +278,11 @@ export default function EventWall() {
 
         <section className="px-5 py-4 md:px-8">
           <div className="mb-5 rounded-2xl border border-slate-800 bg-slate-900/60 p-4 text-sm text-slate-300">
-            Your videos are automatically saved locally on this device.
+            Paste any YouTube link. Your wall is saved locally on this device.
           </div>
 
           <section className="px-0 py-2">
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-2">
+            <div className="grid gap-5 md:grid-cols-2">
               {videoList.map((video) => (
                 <VideoCard
                   key={video.id}
@@ -345,9 +292,7 @@ export default function EventWall() {
                 />
               ))}
 
-              {Array.from({
-                length: emptyFreeSlots,
-              }).map((_, index) => (
+              {Array.from({ length: emptyFreeSlots }).map((_, index) => (
                 <EmptyVideoSlot
                   key={`empty-${index}`}
                   onClick={openAddVideoModal}
@@ -357,10 +302,7 @@ export default function EventWall() {
 
             <div className="mt-8 space-y-4">
               {tiers.map((tier) => (
-                <UpgradeTier
-                  key={tier.name}
-                  tier={tier}
-                />
+                <UpgradeTier key={tier.name} tier={tier} />
               ))}
             </div>
           </section>
@@ -371,12 +313,9 @@ export default function EventWall() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-950 p-6 shadow-2xl">
             <div className="mb-5">
-              <h2 className="text-2xl font-bold text-white">
-                Add Video
-              </h2>
-
+              <h2 className="text-2xl font-bold text-white">Add Video</h2>
               <p className="mt-1 text-sm text-slate-400">
-                Paste a YouTube link.
+                Paste a YouTube link into your wall.
               </p>
             </div>
 
@@ -385,28 +324,22 @@ export default function EventWall() {
                 <label className="mb-2 block text-sm font-medium text-slate-300">
                   Video Name
                 </label>
-
                 <input
                   value={videoName}
-                  onChange={(event) =>
-                    setVideoName(event.target.value)
-                  }
-                  placeholder="UFC Main Card"
+                  onChange={(event) => setVideoName(event.target.value)}
+                  placeholder="Optional"
                   className="h-11 w-full rounded-2xl border border-slate-800 bg-slate-900 px-4 text-white outline-none placeholder:text-slate-500 focus:border-slate-600"
                 />
               </div>
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-300">
-                  YouTube URL
+                  YouTube Link
                 </label>
-
                 <input
                   value={videoUrl}
-                  onChange={(event) =>
-                    setVideoUrl(event.target.value)
-                  }
-                  placeholder="https://youtube.com/watch?v=..."
+                  onChange={(event) => setVideoUrl(event.target.value)}
+                  placeholder="https://www.youtube.com/watch?v=..."
                   className="h-11 w-full rounded-2xl border border-slate-800 bg-slate-900 px-4 text-white outline-none placeholder:text-slate-500 focus:border-slate-600"
                 />
               </div>
@@ -439,25 +372,18 @@ export default function EventWall() {
         >
           <div
             className="w-full max-w-5xl"
-            onClick={(event) =>
-              event.stopPropagation()
-            }
+            onClick={(event) => event.stopPropagation()}
           >
             <div className="mb-3 flex items-center justify-between">
               <div>
                 <p className="text-2xl font-bold text-white">
                   {focusedVideo.name}
                 </p>
-
-                <p className="text-sm text-slate-400">
-                  Focus mode
-                </p>
+                <p className="text-sm text-slate-400">Focus mode</p>
               </div>
 
               <Button
-                onClick={() =>
-                  setFocusedVideo(null)
-                }
+                onClick={() => setFocusedVideo(null)}
                 variant="secondary"
                 className="rounded-xl"
               >
