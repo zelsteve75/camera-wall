@@ -417,6 +417,9 @@ export default function EventWall() {
               <a href="/privacy" className="transition hover:text-slate-300">
   Privacy
 </a>
+<a href="/terms" className="transition hover:text-slate-300">
+    Terms
+  </a>
             </div>
 
             <p className="text-xs text-slate-600">
@@ -603,12 +606,6 @@ export default function EventWall() {
           </p>
         </InfoModal>
       )}
-      <a
-  href="/terms"
-  className="transition hover:text-slate-300"
->
-  Terms
-</a>
     </div>
   );
 }
