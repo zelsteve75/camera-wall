@@ -603,6 +603,12 @@ export default function EventWall() {
           </p>
         </InfoModal>
       )}
+      <a
+  href="/terms"
+  className="transition hover:text-slate-300"
+>
+  Terms
+</a>
     </div>
   );
 }
