@@ -400,19 +400,13 @@ export default function EventWall() {
   About
 </a>
 
-              <button
-                onClick={() => setActiveInfoModal("faq")}
-                className="transition hover:text-slate-300"
-              >
-                FAQ
-              </button>
+              <a href="/faq" className="transition hover:text-slate-300">
+  FAQ
+</a>
 
-              <button
-                onClick={() => setActiveInfoModal("privacy")}
-                className="transition hover:text-slate-300"
-              >
-                Privacy
-              </button>
+              <a href="/privacy" className="transition hover:text-slate-300">
+  Privacy
+</a>
             </div>
 
             <p className="text-xs text-slate-600">
