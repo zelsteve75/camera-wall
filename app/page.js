@@ -9,8 +9,6 @@ import { Button } from "@/components/ui/button";
 const STORAGE_KEY = "event-wall-videos";
 const FREE_VIDEO_LIMIT = 4;
 
-const initialVideos = [];
-
 const tiers = [
   {
     name: "Bronze",
@@ -39,13 +37,13 @@ const tiers = [
 ];
 
 function getSavedVideos() {
-  if (typeof window === "undefined") return initialVideos;
+  if (typeof window === "undefined") return [];
 
   try {
     const savedVideos = localStorage.getItem(STORAGE_KEY);
-    return savedVideos ? JSON.parse(savedVideos) : initialVideos;
+    return savedVideos ? JSON.parse(savedVideos) : [];
   } catch {
-    return initialVideos;
+    return [];
   }
 }
 
@@ -213,8 +211,24 @@ export default function EventWall() {
 
   const [videoUrl, setVideoUrl] = useState("");
 
-  const [videoList, setVideoList] =
-    useState(getSavedVideos);
+  const [videoList, setVideoList] = useState([]);
+
+  const [hasLoaded, setHasLoaded] =
+    useState(false);
+
+  useEffect(() => {
+    setVideoList(getSavedVideos());
+    setHasLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (hasLoaded) {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(videoList)
+      );
+    }
+  }, [videoList, hasLoaded]);
 
   const reachedFreeLimit =
     videoList.length >= FREE_VIDEO_LIMIT;
@@ -223,13 +237,6 @@ export default function EventWall() {
     FREE_VIDEO_LIMIT - videoList.length,
     0
   );
-
-  useEffect(() => {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(videoList)
-    );
-  }, [videoList]);
 
   const resetVideoForm = () => {
     setVideoUrl("");
@@ -259,7 +266,7 @@ export default function EventWall() {
       `https://www.youtube.com/embed/${videoId}`;
 
     const newVideo = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       url: cleanUrl,
       embedUrl,
     };
