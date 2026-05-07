@@ -170,7 +170,7 @@ export default function CameraWallPrototype() {
 
           <section className="px-0 py-2">
             {cameraList.length === 0 ? (
-              <div className="grid gap-5 md:grid-cols-2">
+              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
                 {[1, 2, 3, 4, 5, 6, 7, 8].map((slot) => (
                   <button
                     key={slot}
@@ -187,8 +187,7 @@ export default function CameraWallPrototype() {
                 ))}
               </div>
             ) : (
-              <>
-                <div className={layout === "grid" ? "grid gap-5 md:grid-cols-2 xl:grid-cols-4" : "flex gap-5 overflow-x-auto pb-2"}>
+              <div className={layout === "grid" ? "grid gap-5 md:grid-cols-2 xl:grid-cols-4" : "flex gap-5 overflow-x-auto pb-2"}>
                 {cameraList.map((camera) => (
                   <div key={camera.id} className={layout === "row" ? "min-w-[340px] md:min-w-[460px]" : ""}>
                     <CameraCard
@@ -200,56 +199,55 @@ export default function CameraWallPrototype() {
                   </div>
                 ))}
               </div>
-
-                <div className="mt-8 space-y-4">
-                    <details className="group overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/40">
-                      <summary className="flex cursor-pointer list-none items-center justify-between px-6 py-5 text-sm text-slate-200 marker:hidden">
-                        <div>
-                          <p className="font-semibold text-white">Bronze — 12 Cameras</p>
-                          <p className="mt-1 text-slate-400">Unlock 4 additional camera slots with Bronze.</p>
-                        </div>
-                        <span className="text-slate-500 transition group-open:rotate-180">⌄</span>
-                      </summary>
-
-                      <div className="grid gap-5 border-t border-slate-800 p-5 md:grid-cols-2">
-                        {[1, 2, 3, 4].map((slot) => (
-                          <div
-                            key={slot}
-                            className="group aspect-video rounded-3xl border border-dashed border-slate-700 bg-slate-950/40"
-                          >
-                            <div className="flex h-full flex-col items-center justify-center text-slate-600 transition group-hover:text-slate-400">
-                              <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full border border-slate-700 bg-slate-950">
-                                <Plus className="h-6 w-6" />
-                              </div>
-                              <p className="text-sm font-medium">Locked Slot</p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </details>
-
-                    <details className="group overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/30">
-                      <summary className="flex cursor-pointer list-none items-center justify-between px-6 py-5 text-sm text-slate-200 marker:hidden">
-                        <div>
-                          <p className="font-semibold text-white">Silver — 16 Cameras</p>
-                          <p className="mt-1 text-slate-400">Unlock 8 additional camera slots with Silver.</p>
-                        </div>
-                        <span className="text-slate-500 transition group-open:rotate-180">⌄</span>
-                      </summary>
-                    </details>
-
-                    <details className="group overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/20">
-                      <summary className="flex cursor-pointer list-none items-center justify-between px-6 py-5 text-sm text-slate-200 marker:hidden">
-                        <div>
-                          <p className="font-semibold text-white">Gold — 24 Cameras</p>
-                          <p className="mt-1 text-slate-400">Unlock 16 additional camera slots with Gold.</p>
-                        </div>
-                        <span className="text-slate-500 transition group-open:rotate-180">⌄</span>
-                      </summary>
-                    </details>
-                  </div>
-              </>
             )}
+
+            <div className="mt-8 space-y-4">
+              <details className="group overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/40">
+                <summary className="flex cursor-pointer list-none items-center justify-between px-6 py-5 text-sm text-slate-200 marker:hidden">
+                  <div>
+                    <p className="font-semibold text-white">Bronze — 12 Cameras</p>
+                    <p className="mt-1 text-slate-400">Unlock 4 additional camera slots with Bronze.</p>
+                  </div>
+                  <span className="text-slate-500 transition group-open:rotate-180">⌄</span>
+                </summary>
+
+                <div className="grid gap-5 border-t border-slate-800 p-5 md:grid-cols-2 xl:grid-cols-4">
+                  {[1, 2, 3, 4].map((slot) => (
+                    <div
+                      key={slot}
+                      className="group aspect-video rounded-3xl border border-dashed border-slate-700 bg-slate-950/40"
+                    >
+                      <div className="flex h-full flex-col items-center justify-center text-slate-600 transition group-hover:text-slate-400">
+                        <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full border border-slate-700 bg-slate-950">
+                          <Plus className="h-6 w-6" />
+                        </div>
+                        <p className="text-sm font-medium">Locked Slot</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </details>
+
+              <details className="group overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/30">
+                <summary className="flex cursor-pointer list-none items-center justify-between px-6 py-5 text-sm text-slate-200 marker:hidden">
+                  <div>
+                    <p className="font-semibold text-white">Silver — 16 Cameras</p>
+                    <p className="mt-1 text-slate-400">Unlock 8 additional camera slots with Silver.</p>
+                  </div>
+                  <span className="text-slate-500 transition group-open:rotate-180">⌄</span>
+                </summary>
+              </details>
+
+              <details className="group overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/20">
+                <summary className="flex cursor-pointer list-none items-center justify-between px-6 py-5 text-sm text-slate-200 marker:hidden">
+                  <div>
+                    <p className="font-semibold text-white">Gold — 24 Cameras</p>
+                    <p className="mt-1 text-slate-400">Unlock 16 additional camera slots with Gold.</p>
+                  </div>
+                  <span className="text-slate-500 transition group-open:rotate-180">⌄</span>
+                </summary>
+              </details>
+            </div>
           </section>
         </section>
       </main>
