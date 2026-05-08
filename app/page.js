@@ -334,7 +334,7 @@ export default function EventWall() {
         </header>
 
         <section className="px-4 py-3 md:px-6">
-          <div className="grid gap-3 md:grid-cols-[1fr_728px]">
+          <div className="grid gap-3 md:grid-cols-2">
             <Card className="overflow-hidden rounded-2xl border-slate-800 bg-black shadow-xl shadow-black/20">
               <div className="h-full px-4 py-4">
                 <p className="text-sm font-semibold text-white">
