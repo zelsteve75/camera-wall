@@ -190,6 +190,21 @@ function VideoCard({ video, focus = false, onFocus, onEdit, onDelete }) {
   );
 }
 
+function AdShell({ compact = false }) {
+  return (
+    <div
+      className={`flex items-center justify-center rounded-2xl border border-slate-800 bg-black/30 shadow-xl shadow-black/10 ${
+        compact ? "h-[90px]" : "min-h-[90px]"
+      }`}
+      aria-label="Sponsored placement"
+    >
+      <span className="text-[11px] uppercase tracking-[0.25em] text-slate-700">
+        Sponsored
+      </span>
+    </div>
+  );
+}
+
 export default function EventWall() {
   const [focusedVideo, setFocusedVideo] = useState(null);
   const [showVideoModal, setShowVideoModal] = useState(false);
@@ -320,30 +335,30 @@ export default function EventWall() {
 
         <section className="px-4 py-3 md:px-6">
           <div className="grid gap-3 md:grid-cols-[1fr_728px]">
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/60 px-4 py-3">
-              <p className="text-sm font-semibold text-white">
-                {currentUseCase.title}
-              </p>
+            <Card className="overflow-hidden rounded-2xl border-slate-800 bg-black shadow-xl shadow-black/20">
+              <div className="h-full px-4 py-4">
+                <p className="text-sm font-semibold text-white">
+                  {currentUseCase.title}
+                </p>
 
-              <p className="mt-1 text-xs leading-relaxed text-slate-400 md:text-sm">
-                {currentUseCase.description}
-              </p>
+                <p className="mt-2 text-xs leading-relaxed text-slate-400 md:text-sm">
+                  {currentUseCase.description}
+                </p>
 
-              <div className="mt-3 flex flex-wrap gap-2">
-                {currentUseCase.examples.map((example) => (
-                  <span
-                    key={example}
-                    className="rounded-full border border-slate-800 bg-slate-950 px-3 py-1 text-[11px] text-slate-400"
-                  >
-                    {example}
-                  </span>
-                ))}
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {currentUseCase.examples.map((example) => (
+                    <span
+                      key={example}
+                      className="rounded-full border border-slate-800 bg-slate-950 px-3 py-1 text-[11px] text-slate-400"
+                    >
+                      {example}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
+            </Card>
 
-            <div className="flex h-[90px] items-center justify-center rounded-2xl border border-dashed border-slate-800 bg-slate-900/40 text-sm text-slate-500">
-              728x90 Advertisement
-            </div>
+            <AdShell compact />
           </div>
         </section>
 
@@ -369,9 +384,7 @@ export default function EventWall() {
         </section>
 
         <section className="px-4 pb-6 md:px-6">
-          <div className="flex h-[90px] items-center justify-center rounded-2xl border border-dashed border-slate-800 bg-slate-900/40 text-sm text-slate-500">
-            Bottom Advertisement
-          </div>
+          <AdShell compact />
         </section>
 
         <footer className="border-t border-slate-900 px-4 py-6 md:px-6">
